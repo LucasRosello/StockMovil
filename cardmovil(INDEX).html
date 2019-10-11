@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<title>Stock Movil</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<style>
+		canvas{
+		   display: none;
+		}
+  
+		video{
+		   width: 100%;
+		}
+		/* --- CARDS --- */
+		.card{
+			width:100%;
+			margin-bottom:25px;
+		}
+		a .btn-danger{
+			color:white;
+			height: 100%;
+			line-height: 80px;
+		}
+
+		.menos{
+			color:white !important;
+			width: 36%;
+			border-right: solid;
+			z-index:2;
+		}
+
+		input{
+			width: 33%;
+			z-index: 99;
+			margin-left: -5px;
+			height: 100%;
+			border-radius: 0;
+		}
+
+		.mas{
+			width: 36%;
+			z-index: 2;
+			color: white !important;
+			margin-left: -5px;
+		}
+	 </style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-12" >
+				<button class="dashed" id="botonmodal" data-toggle="modal" data-target="#camaramodal">[(O)]Escanear</button>
+				<div class="modal fade" id="camaramodal" tabindex="-1" role="dialog" aria-labelledby="titulo" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+					   <div class="modal-content">
+						  <div class="modal-header">
+							 <h5 class="modal-title" id="titulo">Apunta al codigo de barras</h5>
+							 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+						  </div>
+						  <div class="modal-body">
+							 <div id="camara"></div>
+						  </div>
+					   </div>
+					</div>
+				</div>
+				<div id="main" style="margin:0; padding:0;">	
+					<div class="card" style="width:100%; margin-bottom:25px;" id="card77355832642">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-2 columnaCard">	
+									<a onclick="borrarCard('card77355832642')" class="btn btn-danger" style="color:white; height: 100%;line-height: 80px;">X</a>
+								</div>
+								<div class="col-5 columnaCard">
+									<b>CALDO DE VERDURAS</b><BR>
+									<i style="font-size: 11px;">77355832642</i><BR>
+									$23,00 c/u<br>
+								</div>
+								<div class="col-5 columnaCard">
+									<div class="row">
+										<a onclick="disminuir(`77355832642`)" class="text-white btn btn-primary" style="color:white; width: 36%; border-right: solid; z-index:2;">- </a>
+										<input type="text" id="77355832642" name="" style="width: 33%; z-index: 99; margin-left: -5px; height: 100%; border-radius: 0;" value="1">
+										<a onclick="aumentar('77355832642')" class="mas btn btn-primary"> +</a>
+										<br>
+									</div>
+									<div class="row d-flex flex-row-reverse">
+										<h2 class="d-flex mr-3 mt-3 mb-0 align-self-end">$23,00</h2>
+									</div>		
+								</div>	
+							</div>
+						</div>
+					</div>
+				</div>
+				<br class="SEPARADOR" style="margin-bottom: 200px;">				
+			</div>
+		</div>
+	</div>
+	<div class="footer" style="box-shadow: 0 1rem 3rem rgba(0,0,0,.5) !important;">
+		<div class="container my-3">
+			<p>Total: $<span>234,56</span></p> <hr>
+			<p>Productos: <span id="cantidadProductos">0</span></p><hr>
+			<div class="d-flex justify-content-between">
+				<button onclick="borrarTodo()" class="btn btn-danger">Cancelar</button><button onclick="generarCard()" class="btn btn-success">Pagar</button>
+			</div>
+		</div>
+	</div>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/quagga.min.js"></script>
+	<script type="text/javascript">
+
+		$("#botonmodal").click(function(){
+
+			Quagga.init({
+				inputStream : {
+					name : "Live",
+					type : "LiveStream",
+					target: document.querySelector('#camara')    // Define en que div se ejecuta la camara
+				},
+				decoder : {
+					readers : ["ean_reader"] //Tipo de codigo de barras que lee (ver web)
+				}
+				}, function(err) {
+					if (err) {
+						console.log(err);
+						return
+					}
+					console.log("Compilado, listo para actuar perreque.");
+					Quagga.start();
+			});
+		});
+
+		Quagga.onDetected(function(data){ //Ejecuta al detectar un codigo de barras
+			Quagga.stop();
+			$('#camaramodal').modal('hide');
+			//Cuando detecta un codigo de barras en la camara...
+			console.log(data.codeResult.code);
+			let codigo = 7794000597662; //HARCODEADO CAMBIARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+			buscarDatos(codigo);
+		});
+
+
+		var cantidadProductos = 0;
+
+		function actualizarCantidad()
+		{
+			document.getElementById("cantidadProductos").innerHTML = cantidadProductos;
+		}
+
+
+
+		function disminuir(id)
+		{		
+			let input = document.getElementById(id);
+			let count = parseInt(input.value) - 1;
+			count = count < 1 ? 1 : count;
+			input.value = count;
+			recalcularPrecio()
+		}
+
+
+
+		function aumentar(id)
+		{
+			let input = document.getElementById(id);
+			let count = parseInt(input.value) + 1;
+			count = count < 1 ? 1 : count;
+			input.value = count;
+			recalcularPrecio()
+		}
+
+
+
+		function recalcularPrecio()
+		{
+			id = "7794122013071"
+			document.getElementById("preciofinal"+id).innerHTML = "$"+(document.getElementById(id).value)*(document.getElementById("precio"+id).innerHTML)+",00";
+		}
+
+
+
+		function buscarDatos(id)
+		{
+			let xhttp = new XMLHttpRequest();	
+			xhttp.onreadystatechange = function() {
+				if (xhttp.readyState == 4 && xhttp.status == 200) {
+				var producto = xhttp.responseText;
+				generarCard(producto);
+				}
+			}
+			
+			xhttp.open("GET", "php/buscarcodigo.php?id="+id, true);
+			xhttp.send();
+		}
+
+
+
+		async function generarCard(producto)
+		{
+			
+			producto = JSON.parse(producto);	
+			console.log(producto)
+			
+			id = producto["id"];
+			
+			if (document.getElementById(id)) {
+				alert("Este elemento ya se escaneo");
+			}
+			else
+			{
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (xhttp.readyState == 4 && xhttp.status == 200) {
+						document.getElementById("main").innerHTML += xhttp.responseText;
+						recalcularPrecio()
+						cantidadProductos = cantidadProductos + 1;
+						actualizarCantidad();
+					}
+				};
+				xhttp.open("POST", "php/generarCard.php", true);
+				xhttp.setRequestHeader("Content-type", "application/json");
+				xhttp.send(JSON.stringify(producto));
+			}
+		}
+
+
+
+		function borrarCard(id)
+		{
+			let element = document.getElementById(id);
+			if (element.parentNode) {
+				element.parentNode.removeChild(element);
+				cantidadProductos = cantidadProductos - 1;
+				actualizarCantidad();
+			}
+		}
+
+
+
+		function borrarTodo()
+		{
+			let element = document.getElementById("main");
+			while (element.firstChild) {
+				element.removeChild(element.firstChild);
+			}
+		}
+
+
+
+	</script>
+</body>
+</html>

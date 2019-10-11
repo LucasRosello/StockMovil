@@ -1,0 +1,97 @@
+	.columnaCard {
+		padding-left:10px;
+	}	
+
+	span {cursor:pointer; }
+		.number{
+			margin:100px;
+		}
+		.minus, .plus{
+			width:20px;
+			height:20px;
+			background:#f2f2f2;
+			border-radius:4px;
+			padding:8px 5px 8px 5px;
+			border:1px solid #ddd;
+      display: inline-block;
+      vertical-align: middle;
+      text-align: center;
+		}
+		input{
+			height:34px;
+      width: 100px;
+      text-align: center;
+      font-size: 26px;
+			border:1px solid #ddd;
+			border-radius:4px;
+      display: inline-block;
+      vertical-align: middle;
+			}
+
+
+body{
+	background-color:#F0F0F0;
+}
+/* --- BOTON DASHED ---*/
+.dashed{
+
+
+			border: 3px dashed #484848;
+			color: 	#484848;
+			border-radius:  12px;
+			/*box-shadow: 0 0 0 8px #ff0030;*/
+			width: 100%;
+			margin-bottom: 20px;
+			padding:  10px;
+			font-size: 	20px;
+
+}
+/* --- CARDS --- 
+
+<a class="btn btn-primary"><h1>-</h1></a>
+								<input type="text">
+								<button class="btn btn-primary"><h1>+</h1></button> <br>
+*/
+@media (min-width: 600px) {
+	
+	.card .card-body a,
+	.card .card-body button {
+		height: 100%;
+		width: 5em;
+		color: white;
+		display: inline-block;
+	}
+
+	.card .card-body input {
+		height: 100%;
+		font-size: 50PX;
+		width:1.6em;
+	}
+}
+
+
+@media (max-width: 600px) {
+	.card .card-body a,
+	.card .card-body button {
+
+	}
+}
+
+
+/* FOOTER */
+.footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: #F8F8F8;
+   text-align: left;
+   z-index: 99;
+
+
+}
+
+.footer button{
+	width: 48%;
+
+}

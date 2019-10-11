@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title></title>
+   <link rel="stylesheet" type="text/css" href="css/style.css">
+   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+   <meta name="viewport" content="width=device-width, user-scalable=no">
+   <meta charset="utf-8">
+   <style>
+      canvas{
+         display: none;
+      }
+
+      video{
+         width: 100%;
+      }
+   </style>
+</head>
+<body>
+   <nav class="navbar navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <ul class="ml-auto navbar-nav">
+         <form class="form-inline my-2 my-lg-0">
+            <input type="search" name="search" class="form-control mr-sm-2" placeholder="Busca...">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">Buscar</button>
+         </form>
+      </ul>
+   </nav>
+   <div class="container">
+      <div class="row">
+         <div class="resultado">
+               <h2 id="codigo"></h2>
+               <h2 id="precio">$ Calculando... pa</h2>
+            </div>
+      </div>
+         <button type="button" id="botonmodal" class="btn btn-primary" data-toggle="modal" data-target="#camaramodal">
+            (icono)Escanear
+         </button>
+         <div class="modal fade" id="camaramodal" tabindex="-1" role="dialog" aria-labelledby="titulo" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="titulo">Apunta al codigo de barras</h5>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  </div>
+                  <div class="modal-body">
+                     <div id="camara"></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+   </div> 
+
+   <script src="js/jquery.min.js"></script>
+   <script src="js/popper.min.js"></script>
+   <script src="js/bootstrap.min.js"></script>
+   <script src="js/quagga.min.js"></script>
+
+
+<script type="text/javascript">
+
+$("#botonmodal").click(function(){
+
+	Quagga.init({
+    inputStream : {
+      name : "Live",
+      type : "LiveStream",
+      target: document.querySelector('#camara')    // Define en que div se ejecuta la camara
+    },
+    decoder : {
+      readers : ["ean_reader"] //Tipo de codigo de barras que lee (ver web)
+    }
+  }, function(err) {
+      if (err) {
+          console.log(err);
+          return
+      }
+      console.log("Compilado, listo para actuar perreque.");
+      Quagga.start();
+  });
+});
+
+
+
+Quagga.onDetected(function(data){ //Ejecuta al detectar un codigo de barras
+   Quagga.stop();
+    $('#camaramodal').modal('hide');
+	//Cuando detecta un codigo de barras en la camara...
+let codigo = data.codeResult.code;
+console.log(codigo);
+document.getElementById("codigo").innerHTML = codigo;		//Imprime el codigo de barra en el h2
+
+
+$.ajax({
+   url: 'php/buscarcodigo.php',
+	type: 'POST',
+	data: { codigo }, 
+	success: function (response){
+		
+     document.getElementById("precio").innerHTML = "$ "+response;
+	}
+});
+});
+</script>
+
+</body>
+</html>

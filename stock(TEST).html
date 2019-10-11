@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stock Movil</title>
+</head>
+
+<body>
+
+<h2>Prueba de camara</h2>
+<!-- Stream video via webcam -->
+<div class="camara">
+    <video id="video" playsinline autoplay></video>
+    <div class="controller">
+	    <button id="snap">Capture</button>
+	     <br/>
+	    <button id="t" onclick="alert(getBarcodeFromImage('foto'))">Scan</button>
+	</div>
+</div>
+
+<!-- Trigger canvas web API -->
+
+
+<!-- Webcam video snapshot -->
+<canvas id="canvas" width="640" height="480"></canvas>
+<script src="quagga.min.js"></script>
+<script>
+
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const snap = document.getElementById("snap");
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    width: 1280, height: 720
+  }
+};
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+}
+
+// Load init
+init();
+
+// Draw image
+var context = canvas.getContext('2d');
+snap.addEventListener("click", function() {
+        context.drawImage(video, 0, 0, 640, 480);
+});
+
+
+
+Quagga.init({
+    inputStream : {
+      name : "Live",
+      type : "LiveStream",
+      target: document.querySelector('#camara')    // Or '#yourElement' (optional)
+    },
+    decoder : {
+      readers : ["code_128_reader"]
+    }
+  }, function(err) {
+      if (err) {
+          console.log(err);
+          return
+      }
+      console.log("Initialization finished. Ready to start");
+      Quagga.start();
+  });
+
+Quagga.onDetected(function(datos){
+
+console.log(data);
+
+});
+
+
+/* 
+
+*/
+
+
+</script>
+
+</body>
+</html>
